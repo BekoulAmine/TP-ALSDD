@@ -1,0 +1,14 @@
+Moto 1 2
+Vans 2 4
+Moto 3 2
+Vans 4 5
+Moto 5 2
+Vans 6 7
+Moto 7 2
+Vans 8 3
+Moto 9 2
+Vans 10 5
+Moto 11 2
+Vans 12 6
+Moto 13 2   
+Vans 14 4
