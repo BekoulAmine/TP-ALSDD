@@ -85,17 +85,17 @@ void displayItemL(ptrItem head)
     }
 }
 
-void addItem(ptrItem head, dataItem newInfo)
+void addItem(ptrItem *head, dataItem newInfo)
 {
     ptrItem newItem = createItem(newInfo);
 
-    if (head == NULL)
+    if (*head == NULL)
     {
-        head = newItem;
+        *head = newItem;
     }
     else
     {
-        assignAddressItem(findTailItem(head), newItem);
+        assignAddressItem(findTailItem(*head), newItem);
     }
 }
 
@@ -277,42 +277,53 @@ ptrQueue createVansQ(dataVehicle info[], int size)
 
 //------------------------------------------------------Delivery Part------------------------------------------
 
+void linkItemMoto(ptrItem item, ptrQueue moto)
+{
+    bubbleSort(item);
+    ptrVehicle currentMoto = getHead(moto);
+
+    while (item != NULL)
+    {
+        if (infoWilaya(item) == 16 && infoWeight(item) <= 3)
+        {
+            if (lengthOfItemList(getAssignedItem(currentMoto)) == 2)
+            {
+                currentMoto = nextVehicle(currentMoto);
+            }
+            addItem(&(currentMoto->item), infoItem(item));
+        }
+        item = nextItem(item);
+    }
+}
+
 void linkItemsVans(ptrItem item, ptrQueue vans)
 {
-    ptrVehicle tempVans = getHead(vans);
+    bubbleSort(item);
+
+    ptrVehicle currentVan = getHead(vans);
     ptrItem tempItem = item;
-    ptrItem newItem;
 
-    bubbleSort(tempItem);
+    int wilaya;
 
-    while (tempItem != NULL || tempVans != NULL)
+    for (wilaya = 1; wilaya < 59; wilaya++)
     {
-        if (infoWilaya(tempItem) != 16)
+        while (currentVan != NULL)
         {
-            if (infoAssignedItem(tempVans) == NULL)
+
+            while (tempItem != NULL)
             {
-                addItem(infoAssignedItem(tempVans), infoItem(tempItem));
-            }
-            else
-            {
-                if (infoWilaya(infoAssignedItem(tempVans)) != infoWilaya(tempItem))
+                if ((wilaya == 16 && infoWeight(tempItem) > 3) || (wilaya == infoWilaya(tempItem) && wilaya != 16))
                 {
-                    tempVans = nextVehicle(tempVans);
-                    addItem(infoAssignedItem(tempVans), infoItem(tempItem));
+                    if (lengthOfItemList(getAssignedItem(currentVan)) >= infoCapacity(currentVan))
+                    {
+                        currentVan = nextVehicle(currentVan);
+                    }
+                    addItem(&(currentVan->item), infoItem(tempItem));
                 }
-                else
-                {
-                    addItem(infoAssignedItem(tempVans), infoItem(tempItem));
-                }
+                tempItem = nextItem(tempItem);
             }
+            currentVan = nextVehicle(currentVan);
+            tempItem = item;
         }
-        else
-        {
-            if (infoWeight(tempItem) > 3)
-            {
-                addItem(infoAssignedItem(tempVans), infoItem(tempItem));
-            }
-        }
-        tempItem = nextItem(tempItem);
     }
 }

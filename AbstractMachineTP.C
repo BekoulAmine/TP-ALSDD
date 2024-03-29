@@ -130,11 +130,6 @@ void assignVehicle(ptrVehicle vehicle, dataVehicle source)
     assignCapacity(vehicle, source.capacity);
 }
 
-void addItemToVehicle(ptrVehicle vehicle, ptrItem item)
-{
-    vehicle->item = item;
-}
-
 void assignTrips(ptrVehicle vehicle, int trips)
 {
     vehicle->trips = trips;
@@ -160,9 +155,16 @@ int infoTrips(ptrVehicle vehicle)
     return vehicle->trips;
 }
 
-ptrItem infoAssignedItem(ptrVehicle vehicle)
+ptrItem getAssignedItem(ptrVehicle vehicle)
 {
-    return vehicle->item;
+    if (vehicle != NULL)
+    {
+        return vehicle->item;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 dataVehicle infoVehicle(ptrVehicle vehicle)

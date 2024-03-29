@@ -13,7 +13,7 @@ ptrItem createItemL(dataItem info[], int numberOfItems);
 
 void displayItemL(ptrItem head);
 
-void addItem(ptrItem head, dataItem newInfo);
+void addItem(ptrItem *head, dataItem newInfo);
 
 int convertDate(ptrItem item);
 
@@ -38,3 +38,9 @@ void deleteVehicle(ptrVehicle *head, int identifier);
 ptrQueue createMotoQ(dataVehicle info[], int size);
 
 ptrQueue createVansQ(dataVehicle info[], int size);
+
+//------------------------------------------------------Delivery Part------------------------------------------
+
+void linkItemsVans(ptrItem item, ptrQueue vans);
+
+void linkItemMoto(ptrItem item, ptrQueue Moto);
