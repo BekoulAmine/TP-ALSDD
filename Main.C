@@ -22,12 +22,20 @@ int main()
     ptrItem itemList = createItemL(itemData, numItems);
     ptrVehicle vehicleList = createVehicleL(vehicleData, numVehicle);
 
+    ptrQueue van = createVansQ(vehicleData, numVehicle);
+    ptrQueue moto = createMotoQ(vehicleData, numVehicle);
+
     switch (choice)
     {
     case 1:
     {
         printf("List of Items:\n");
         printf("\n");
+
+        displayItemL(itemList);
+        printf("\n");
+
+        removeDeliveredItem(&itemList);
         displayItemL(itemList);
 
         break;
@@ -36,40 +44,44 @@ int main()
     {
         printf("List of Items:\n");
         printf("\n");
+
         displayVehicleL(vehicleList);
 
+        addVehicle(&vehicleList, createVehicle(vehicleData[0]));
+        displayVehicleL(vehicleList);
         break;
     }
     case 3:
     {
-        ptrQueue vans = createVansQ(vehicleData, numVehicle);
-        ptrQueue moto = createMotoQ(vehicleData, numVehicle);
-
         linkItemMoto(itemList, moto);
-        linkItemsVans(itemList, vans);
+        linkItemVan(itemList, van);
 
-        ptrVehicle test = getHead(moto);
-        // ptrVehicle test = getHead(vans);
-
-        while (test != NULL)
-        {
-            displayItemL(getAssignedItem(test));
-            test = nextVehicle(test);
-            printf("\n");
-        }
-
-        /*while (test != NULL)
-        {
-            displayItemL(getAssignedItem(test));
-            test = nextVehicle(test);
-            printf("\n");
-        }*/
+        displayItemL(itemList);
 
         break;
     }
+    case 4:
+    {
+        ptrVehicle vehicles;
+        simulateDelivery(itemList, moto, van, &vehicles);
+
+        displayItemL(itemList);
+        printf("\n");
+        displayVehicleL(vehicles);
+        displayItemL(getAssignedItem(findTailVehicle(vehicles)));
+    }
+    case 5:
+    {
+        ptrVehicle test = dequeue(moto);
+
+        displayVehicleL(test);
+        enqueue(moto, test);
+
+        displayVehicleL(getHead(moto));
+        printf("\n");
+    }
     default:
     {
-        printf("choose right choice .");
         break;
     }
     }

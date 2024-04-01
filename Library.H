@@ -27,7 +27,7 @@ ptrVehicle createVehicleL(dataVehicle info[], int numberOfVehicle);
 
 void displayVehicleL(ptrVehicle head);
 
-void addVehicle(ptrVehicle head, dataVehicle info);
+void addVehicle(ptrVehicle *head, ptrVehicle newVehicle);
 
 void accessByIdentifier(ptrVehicle head, int identifier, ptrVehicle *current, ptrVehicle *previous);
 
@@ -41,6 +41,12 @@ ptrQueue createVansQ(dataVehicle info[], int size);
 
 //------------------------------------------------------Delivery Part------------------------------------------
 
-void linkItemsVans(ptrItem item, ptrQueue vans);
+void addItemToVehicle(ptrItem item, ptrVehicle vehicle);
+
+void linkItemVan(ptrItem item, ptrQueue van);
 
 void linkItemMoto(ptrItem item, ptrQueue Moto);
+
+void simulateDelivery(ptrItem item, ptrQueue moto, ptrQueue van, ptrVehicle *dequeuedVehicle);
+
+void removeDeliveredItem(ptrItem *item);
