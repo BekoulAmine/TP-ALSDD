@@ -60,6 +60,12 @@ int infoIdentifierItem(ptrItem item)
     return item->dataI.identifier;
 }
 
+// Function to retrieve entryDate of an item
+const char *infoEntryDate(ptrItem item)
+{
+    return item->dataI.entryDate;
+}
+
 // Function to retrieve Wilaya of an item
 int infoWilaya(ptrItem item)
 {
@@ -79,6 +85,7 @@ float infoWeight(ptrItem item)
     return item->dataI.weight;
 }
 
+// Function to retrieve status of an item
 const char *infoStatus(ptrItem item)
 {
     return item->dataI.status;
@@ -189,6 +196,12 @@ void assignVehicle(ptrVehicle vehicle, dataVehicle source)
 void assignAddressVehicle(ptrVehicle first, ptrVehicle second)
 {
     first->next = second;
+}
+
+// Function to retrieve type of the vehicle
+const char *infoType(ptrVehicle vehicle)
+{
+    return vehicle->dataV.type;
 }
 
 // Function to retrieve identifier of a vehicle

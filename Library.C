@@ -122,59 +122,45 @@ void addItem(ptrItem *head, dataItem newInfo)
     }
 }
 
-// Function to convert date format for sorting
-int convertDate(ptrItem item)
+// Function to access item by identifier
+void accessByIdentifierItem(ptrItem head, int identifier, ptrItem *current, ptrItem *previous)
 {
-    char date[11];     // Array to store date
-    int converted = 0; // Initialize converted to 0
+    *current = head;  // Set current to head
+    *previous = NULL; // Set previous to NULL
 
-    strcpy(date, item->dataI.entryDate); // Copy entry date to date array
-
-    for (int i = 0; i < strlen(date); i++) // Loop through characters in date
+    while (*current != NULL && infoIdentifierItem(*current) != identifier) // Loop until identifier is found or end of list
     {
-        if (i == 4 || i == 7) // Skip '-' characters
-        {
-            continue;
-        }
-        else
-        {
-            converted *= 10;             // Multiply converted by 10
-            converted += atoi(&date[i]); // Convert character to integer and add to converted
-        }
+        *previous = *current;          // Set previous to current
+        *current = nextItem(*current); // Move to next item
     }
-    return converted; // Return converted date
-}
-
-// Function to swap two items
-void swap(ptrItem first, ptrItem second)
-{
-    dataItem temp = infoItem(first); // Store information of first item in temp
-
-    assignItem(first, infoItem(second)); // Assign information of second item to first
-    assignItem(second, temp);            // Assign temp (information of first item) to second
-}
-
-// Function to sort items using bubble sort
-void bubbleSort(ptrItem head)
-{
-    bool swapped = false; // Initialize swapped to false
-    ptrItem temp;         // Temporary pointer
-
-    do
+    if (*current == NULL) // If identifier is not found
     {
-        swapped = false;                               // Reset swapped to false
-        temp = head;                                   // Set temp to head
-        while (temp != NULL && nextItem(temp) != NULL) // Loop through items
-        {
-            if (convertDate(temp) > convertDate(nextItem(temp))) // Compare dates
-            {
-                ptrItem next = nextItem(temp); // Get next item
-                swap(temp, next);              // Swap items
-                swapped = true;                // Set swapped to true
-            }
-            temp = nextItem(temp); // Move to next item
-        }
-    } while (swapped); // Continue until no swaps are made
+        printf("Identifier %d not found\n", identifier); // Print error message
+        return;
+    }
+}
+
+// Function to delete an item from the linked list by identifier
+void deleteItem(ptrItem *head, int identifier)
+{
+    ptrItem current;
+    ptrItem previous;
+
+    accessByIdentifierItem(*head, identifier, &current, &previous); // Access item by identifier
+
+    if (current == NULL) // If vehicle is not found
+    {
+        return; // Return
+    }
+    if (previous == NULL) // If vehicle is the head of the list
+    {
+        *head = nextItem(*head); // Set head to next vehicle
+    }
+    else
+    {
+        assignAddressItem(previous, nextItem(current)); // Remove current Item from the list
+    }
+    free(current); // Delete current item
 }
 
 //------------------------------------------------------Vehicle Part------------------------------------------
@@ -251,7 +237,7 @@ void accessByIdentifier(ptrVehicle head, int identifier, ptrVehicle *current, pt
 }
 
 // Function to delete a vehicle from the linked list by identifier
-void deleteVehicle(ptrVehicle *head, int identifier)
+ptrVehicle deleteVehicle(ptrVehicle *head, int identifier)
 {
     ptrVehicle current;
     ptrVehicle previous;
@@ -260,7 +246,7 @@ void deleteVehicle(ptrVehicle *head, int identifier)
 
     if (current == NULL) // If vehicle is not found
     {
-        return; // Return
+        return NULL; // Return
     }
     if (previous == NULL) // If vehicle is the head of the list
     {
@@ -270,8 +256,8 @@ void deleteVehicle(ptrVehicle *head, int identifier)
     {
         assignAddressVehicle(previous, nextVehicle(current)); // Remove current vehicle from the list
     }
-
-    free(current); // Free memory allocated to current vehicle
+    assignAddressVehicle(current, NULL); // Clear address of removed vehicle
+    return current;
 }
 
 //------------------------------------------------------Queue Part------------------------------------------
@@ -309,6 +295,62 @@ ptrQueue createVansQ(dataVehicle info[], int size)
 
 //------------------------------------------------------Delivery Part------------------------------------------
 
+// Function to convert date format for sorting
+int convertDate(ptrItem item)
+{
+    char date[11];     // Array to store date
+    int converted = 0; // Initialize converted to 0
+
+    strcpy(date, item->dataI.entryDate); // Copy entry date to date array
+
+    for (int i = 0; i < strlen(date); i++) // Loop through characters in date
+    {
+        if (i == 4 || i == 7) // Skip '-' characters
+        {
+            continue;
+        }
+        else
+        {
+            converted *= 10;             // Multiply converted by 10
+            converted += atoi(&date[i]); // Convert character to integer and add to converted
+        }
+    }
+    return converted; // Return converted date
+}
+
+// Function to swap two items
+void swap(ptrItem first, ptrItem second)
+{
+    dataItem temp = infoItem(first); // Store information of first item in temp
+
+    assignItem(first, infoItem(second)); // Assign information of second item to first
+    assignItem(second, temp);            // Assign temp (information of first item) to second
+}
+
+// Function to sort items using bubble sort
+void sortByDate(ptrItem head)
+{
+    bool swapped = false; // Initialize swapped to false
+    ptrItem temp;         // Temporary pointer
+
+    do
+    {
+        swapped = false;                               // Reset swapped to false
+        temp = head;                                   // Set temp to head
+        while (temp != NULL && nextItem(temp) != NULL) // Loop through items
+        {
+            if (convertDate(temp) > convertDate(nextItem(temp))) // Compare dates
+            {
+                ptrItem next = nextItem(temp); // Get next item
+                swap(temp, next);              // Swap items
+                swapped = true;                // Set swapped to true
+            }
+            temp = nextItem(temp); // Move to next item
+        }
+    } while (swapped); // Continue until no swaps are made
+}
+
+// Function to add an item to vehicle
 void addItemToVehicle(ptrItem item, ptrVehicle vehicle)
 {
     addItem(&(vehicle->item), infoItem(item));
@@ -322,7 +364,7 @@ void linkItemMoto(ptrItem item, ptrQueue motoQueue)
         return;
     }
 
-    bubbleSort(item); // Sort items by entry date
+    sortByDate(item); // Sort items by entry date
 
     ptrItem currentItem = item;
     ptrVehicle currentMoto = getHead(motoQueue);
@@ -352,7 +394,7 @@ void linkItemMoto(ptrItem item, ptrQueue motoQueue)
 // Function to assign items to vans
 void linkItemVan(ptrItem item, ptrQueue van)
 {
-    bubbleSort(item);
+    sortByDate(item);
 
     ptrVehicle currentVan = getHead(van);
     int counter = 0;
@@ -385,66 +427,276 @@ void linkItemVan(ptrItem item, ptrQueue van)
     }
 }
 
+// Function returns True if it exists an item with status "awaiting delivery"
+bool searchAwaiting(ptrItem item)
+{
+    if (item == NULL)
+    {
+        return false;
+    }
+    while (item != NULL)
+    {
+        if (strcmp(infoStatus(item), "awaiting delivery") == 0)
+        {
+            return true;
+        }
+        item = nextItem(item);
+    }
+    return false;
+}
+
 // Function to simulate deliveries
 void simulateDelivery(ptrItem item, ptrQueue moto, ptrQueue van, ptrVehicle *dequeuedVehicle)
 {
-    ptrVehicle infoMoto;
-    ptrVehicle infoVan;
-
     *dequeuedVehicle = NULL;
 
-    // Link items to motorcycles and vans
     linkItemMoto(item, moto);
     linkItemVan(item, van);
 
-    // Check and dequeue fully loaded motorcycles
-    while (!isEmpty(moto) && lengthOfItemList(getAssignedItem(getHead(moto))) == infoCapacity(getHead(moto)))
+    if (searchAwaiting(item))
     {
-        infoMoto = dequeue(moto);
-        addVehicle(dequeuedVehicle, infoMoto);
+        while (!isEmpty(moto) && lengthOfItemList(getAssignedItem(getHead(moto))) == infoCapacity(getHead(moto)))
+        {
+            addVehicle(dequeuedVehicle, dequeue(moto));
+        }
+        while (!isEmpty(van) && lengthOfItemList(getAssignedItem(getHead(van))) == infoCapacity(getHead(van)))
+        {
+            addVehicle(dequeuedVehicle, dequeue(van));
+        }
     }
-    // Check and dequeue fully loaded vans
-    while (!isEmpty(van) && lengthOfItemList(getAssignedItem(getHead(van))) == infoCapacity(getHead(van)))
+    else
     {
-        infoVan = dequeue(van);
-        addVehicle(dequeuedVehicle, infoVan);
+        while (!isEmpty(moto) && lengthOfItemList(getAssignedItem(getHead(moto))) != 0)
+        {
+            addVehicle(dequeuedVehicle, dequeue(moto));
+        }
+        while (!isEmpty(van) && lengthOfItemList(getAssignedItem(getHead(van))) != 0)
+        {
+            addVehicle(dequeuedVehicle, dequeue(van));
+        }
     }
 }
 
 //------------------------------------------------------Delivery comeback Part------------------------------------------
 
-void removeDeliveredItem(ptrItem *head)
+// Function to randomly assign "delivered" or "returned" status to items
+void deliveredOrReturned(ptrVehicle head)
 {
-    if (*head == NULL)
-    {
-        return;
-    }
-    ptrItem temp = *head;
+    // Seed the random number generator
+    srand(time(NULL));
 
-    while (nextItem(temp) != NULL)
+    // Iterate through each vehicle
+    while (head != NULL)
     {
-        if (strcmp(infoStatus(nextItem(temp)), "delivered") == 0)
+        ptrItem item = getAssignedItem(head);
+        // Iterate through each item assigned to the vehicle
+        while (item != NULL)
         {
-            ptrItem removed = nextItem(temp);
-            assignAddressItem(temp, nextItem(nextItem(temp)));
-            free(removed);
+            // Generate a random value (0 or 1)
+            int value = rand() % 2;
+            // Assign "delivered" status if the random value is 1, otherwise assign "returned" status
+            (value) ? assignStatus(item, "delivered") : assignStatus(item, "returned");
+            // Move to the next item
+            item = nextItem(item);
         }
-        temp = nextItem(temp);
+        // Move to the next vehicle
+        head = nextVehicle(head);
     }
 }
 
-void simulateComeback(ptrItem item, ptrVehicle vehicle)
+// Function to remove delivered items from the list
+void removeDeliveredItem(ptrItem *head)
 {
-    removeDeliveredItem(&item);
+    ptrItem current = *head;
 
-    while (vehicle != NULL)
+    while (current != NULL)
     {
-        if (infoTrips(vehicle) == 3)
+        if (strcmp(infoStatus(current), "delivered") == 0)
         {
+            deleteItem(head, infoIdentifierItem(current));
+            current = *head;
         }
         else
         {
+            current = nextItem(current);
+        }
+    }
+}
+
+// Function to update the status of items based on assigned items in vehicles
+void updateStatusItem(ptrVehicle vehicle, ptrItem item)
+{
+    ptrItem temp = item;
+    ptrItem Current = NULL;
+    while (vehicle != NULL)
+    {
+        temp = item;
+        Current = getAssignedItem(vehicle);
+
+        while (Current != NULL)
+        {
+            temp = item;
+            while (temp != NULL)
+            {
+                if (infoIdentifierItem(temp) == infoIdentifierItem(Current))
+                {
+                    // Update the status of the item to match the assigned item in the vehicle
+                    assignStatus(temp, infoStatus(Current));
+                    break;
+                }
+                temp = nextItem(temp);
+            }
+            Current = nextItem(Current);
         }
         vehicle = nextVehicle(vehicle);
     }
+}
+
+// Function to enqueue vehicles that have no assigned items back to their respective queues
+void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
+{
+    ptrVehicle tempVehicle = *dequeuedVehicles;
+
+    while (tempVehicle != NULL)
+    {
+        removeDeliveredItem(&(tempVehicle->item));
+
+        if (lengthOfItemList(getAssignedItem(tempVehicle)) == 0)
+        {
+            // Delete the vehicle from the dequeued list
+            ptrVehicle deletedVehicle = deleteVehicle(dequeuedVehicles, infoIdentifierVehicle(tempVehicle));
+            tempVehicle = *dequeuedVehicles;
+            // Enqueue the deleted vehicle back to its respective queue based on its type
+            if (strcmp(infoType(deletedVehicle), "Moto") == 0)
+            {
+                enqueue(moto, deletedVehicle);
+            }
+            else
+            {
+                enqueue(van, deletedVehicle);
+            }
+        }
+        tempVehicle = nextVehicle(tempVehicle);
+    }
+}
+
+// Function to simulate the comeback process for items and vehicles
+void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
+{
+    ptrVehicle tempVehicle = *dequeuedVehicles;
+
+    // Randomly assign statuses to items
+    deliveredOrReturned(*dequeuedVehicles);
+
+    // Update the status of items based on assigned items in vehicles
+    updateStatusItem(*dequeuedVehicles, items);
+
+    // Remove delivered items from the main list of items
+    removeDeliveredItem(&items);
+
+    // Enqueue vehicles that have no assigned items back to their respective queues
+    vehicleComeback(dequeuedVehicles, moto, van);
+}
+
+//------------------------------------------------------Return pick-up Part------------------------------------------
+
+//------------------------------------------------------Report Part------------------------------------------
+
+// Function to update the items file with the latest information
+void updateItemsFile(ptrItem head, char *filename)
+{
+    // Open the file for writing
+    ptrFile file = fopen(filename, "w");
+
+    // Iterate through the list and write item information to the file
+    ptrItem current = head;
+    while (current != NULL)
+    {
+        // Extract item data
+        dataItem data = infoItem(current);
+        // Write item information to the file
+        fprintf(file, "%d %s %d %.1f %s\n", infoIdentifierItem(current), infoEntryDate(current), infoWilaya(current), infoWeight(current), infoStatus(current));
+        // Move to the next item
+        current = nextItem(current);
+    }
+
+    // Close the file
+    fclose(file);
+}
+
+// Sorts a linked list of items in reverse order based on their dates.
+void reversedSort(ptrItem head)
+{
+    bool swapped = false; // Initialize swapped to false
+    ptrItem temp;         // Temporary pointer
+
+    do
+    {
+        swapped = false;                               // Reset swapped to false
+        temp = head;                                   // Set temp to head
+        while (temp != NULL && nextItem(temp) != NULL) // Loop through items
+        {
+            if (convertDate(temp) < convertDate(nextItem(temp))) // Compare dates
+            {
+                ptrItem next = nextItem(temp); // Get next item
+                swap(temp, next);              // Swap items
+                swapped = true;                // Set swapped to true
+            }
+            temp = nextItem(temp); // Move to next item
+        }
+    } while (swapped); // Continue until no swaps are made
+}
+
+// Calculates the number of new items in the list.
+int numberOfNewItem(ptrItem itemList)
+{
+    int count = 0;
+    if (itemList == NULL)
+    {
+        return -1; // Error condition: list is empty or invalid
+    }
+    else
+    {
+        reversedSort(itemList);        // Sort the list in reverse order
+        int s = convertDate(itemList); // Calculate converted date value
+
+        ptrItem temp = itemList;
+        while (temp != NULL && convertDate(temp) == s)
+        {
+            count++;               // Increment count for each item with the same date
+            temp = nextItem(temp); // Move to next item
+        }
+    }
+    return count; // Return total count of new items
+}
+
+// Calculates the number of delivered items.
+int numberOfDeliveredItem(ptrItem itemList, char *fileName)
+{
+    // Subtract the length of itemList from the total lines in the specified file
+    return linesInFile(fileName) - lengthOfItemList(itemList);
+}
+
+// Calculates the number of returned items in the list.
+int numberOfReturnedItem(ptrItem itemList)
+{
+    int count = 0;
+
+    if (itemList == NULL)
+    {
+        return -1; // Error condition: list is empty or invalid
+    }
+    else
+    {
+        ptrItem temp = itemList;
+        while (temp != NULL)
+        {
+            if (!strcmp(infoStatus(temp), "returned"))
+            {
+                count++; // Increment count for each returned item
+            }
+            temp = nextItem(temp); // Move to next item
+        }
+    }
+    return count; // Return total count of returned items
 }

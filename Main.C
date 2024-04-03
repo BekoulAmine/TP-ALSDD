@@ -2,7 +2,6 @@
 
 int main()
 {
-
     int choice;
 
     printf("your choice ? : ");
@@ -35,7 +34,6 @@ int main()
         displayItemL(itemList);
         printf("\n");
 
-        removeDeliveredItem(&itemList);
         displayItemL(itemList);
 
         break;
@@ -46,9 +44,13 @@ int main()
         printf("\n");
 
         displayVehicleL(vehicleList);
+        printf("\n");
 
-        addVehicle(&vehicleList, createVehicle(vehicleData[0]));
+        ptrVehicle deleted = deleteVehicle(&vehicleList, 4);
         displayVehicleL(vehicleList);
+        printf("\n");
+
+        displayVehicleL(deleted);
         break;
     }
     case 3:
@@ -64,21 +66,25 @@ int main()
     {
         ptrVehicle vehicles;
         simulateDelivery(itemList, moto, van, &vehicles);
+        simulateComeback(itemList, &vehicles, moto, van);
 
         displayItemL(itemList);
         printf("\n");
-        displayVehicleL(vehicles);
-        displayItemL(getAssignedItem(findTailVehicle(vehicles)));
-    }
-    case 5:
-    {
-        ptrVehicle test = dequeue(moto);
 
-        displayVehicleL(test);
-        enqueue(moto, test);
+        displayVehicleL(vehicles);
+        printf("\n");
+
+        while (vehicles != NULL)
+        {
+            displayItemL(vehicles->item);
+            vehicles = nextVehicle(vehicles);
+            printf("\n");
+        }
 
         displayVehicleL(getHead(moto));
         printf("\n");
+        displayVehicleL(getHead(van));
+        break;
     }
     default:
     {
