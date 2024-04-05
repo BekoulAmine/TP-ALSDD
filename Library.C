@@ -600,6 +600,65 @@ void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto
 
 //------------------------------------------------------Return pick-up Part------------------------------------------
 
+// Function to remove items marked as "returned" from a linked list of items
+void removeReturnedItem(ptrItem *item)
+{
+    ptrItem current = *item; // Initialize current pointer to the beginning of the list
+
+    // Traverse the list
+    while (current != NULL)
+    {
+        // Check if the current item's status is "returned"
+        if (strcmp(infoStatus(current), "returned") == 0)
+        {
+            // If the item's status is "returned", delete it from the list
+            deleteItem(item, infoIdentifierItem(current));
+            current = *item; // Reset current pointer to the beginning for re-traversal
+        }
+        else
+        {
+            current = nextItem(current); // Move to the next item
+        }
+    }
+}
+
+// Function to process returned vehicles and enqueue them into respective queues
+void vehicleReturn(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
+{
+    ptrVehicle tempVehicle = *dequeuedVehicles; // Initialize tempVehicle pointer to the beginning of the dequeued vehicles list
+
+    // Traverse the list of dequeued vehicles
+    while (tempVehicle != NULL)
+    {
+        // Remove returned items associated with the current vehicle
+        removeReturnedItem(&(tempVehicle->item));
+
+        // Delete the current vehicle from the dequeued vehicles list
+        ptrVehicle deleted = deleteVehicle(dequeuedVehicles, infoIdentifierVehicle(tempVehicle));
+        tempVehicle = *dequeuedVehicles; // Reset tempVehicle pointer to the beginning for re-traversal
+
+        // Enqueue the deleted vehicle into respective queues based on its type
+        if (strcmp(infoType(deleted), "Moto") == 0)
+        {
+            enqueue(moto, deleted); // Enqueue into the moto queue
+        }
+        else
+        {
+            enqueue(van, deleted); // Enqueue into the van queue
+        }
+    }
+}
+
+// Function to simulate pickup process by removing returned items and processing returned vehicles
+void simulatePickup(ptrItem *item, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
+{
+    // Remove returned items from the item list
+    removeReturnedItem(item);
+
+    // Process returned vehicles
+    vehicleReturn(dequeuedVehicles, moto, van);
+}
+
 //------------------------------------------------------Report Part------------------------------------------
 
 // Function to update the items file with the latest information

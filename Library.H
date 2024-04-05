@@ -80,6 +80,14 @@ void deliveredOrReturned(ptrVehicle head);
 // Function to remove items marked as delivered from a linked list of items
 void removeDeliveredItem(ptrItem *item);
 
+// Function to update the status of items based on assigned items in vehicles
+void updateStatusItem(ptrVehicle vehicle, ptrItem item);
+
+// Function to enqueue vehicles that have no assigned items back to their respective queues
+void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
+
+// Function to simulate the comeback process for items and vehicles
+void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
 //------------------------------------------------------Report Part------------------------------------------
 
 // Function to update the items file with the latest information

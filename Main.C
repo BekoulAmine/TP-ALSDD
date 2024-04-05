@@ -55,9 +55,9 @@ int main()
     }
     case 3:
     {
-        linkItemMoto(itemList, moto);
-        linkItemVan(itemList, van);
+        ptrVehicle vehicles;
 
+        simulateDelivery(itemList, moto, van, &vehicles);
         displayItemL(itemList);
 
         break;
@@ -67,20 +67,12 @@ int main()
         ptrVehicle vehicles;
         simulateDelivery(itemList, moto, van, &vehicles);
         simulateComeback(itemList, &vehicles, moto, van);
+        simulatePickup(&itemList, &vehicles, moto, van);
 
         displayItemL(itemList);
         printf("\n");
-
         displayVehicleL(vehicles);
         printf("\n");
-
-        while (vehicles != NULL)
-        {
-            displayItemL(vehicles->item);
-            vehicles = nextVehicle(vehicles);
-            printf("\n");
-        }
-
         displayVehicleL(getHead(moto));
         printf("\n");
         displayVehicleL(getHead(van));
@@ -88,6 +80,7 @@ int main()
     }
     default:
     {
+
         break;
     }
     }
