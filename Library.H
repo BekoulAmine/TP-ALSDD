@@ -87,7 +87,7 @@ void updateStatusItem(ptrVehicle vehicle, ptrItem item);
 void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
 
 // Function to simulate the comeback process for items and vehicles
-void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
+void simulateComeback(ptrItem *items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
 //------------------------------------------------------Report Part------------------------------------------
 
 // Function to update the items file with the latest information

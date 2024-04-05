@@ -31,10 +31,10 @@ int main()
         printf("List of Items:\n");
         printf("\n");
 
+        sortByDate(itemList);
         displayItemL(itemList);
-        printf("\n");
 
-        displayItemL(itemList);
+        printf("\n");
 
         break;
     }
@@ -66,7 +66,7 @@ int main()
     {
         ptrVehicle vehicles;
         simulateDelivery(itemList, moto, van, &vehicles);
-        simulateComeback(itemList, &vehicles, moto, van);
+        simulateComeback(&itemList, &vehicles, moto, van);
         simulatePickup(&itemList, &vehicles, moto, van);
 
         displayItemL(itemList);

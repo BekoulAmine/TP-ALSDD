@@ -148,13 +148,13 @@ void deleteItem(ptrItem *head, int identifier)
 
     accessByIdentifierItem(*head, identifier, &current, &previous); // Access item by identifier
 
-    if (current == NULL) // If vehicle is not found
+    if (current == NULL) // If item is not found
     {
         return; // Return
     }
-    if (previous == NULL) // If vehicle is the head of the list
+    if (previous == NULL) // If item is the head of the list
     {
-        *head = nextItem(*head); // Set head to next vehicle
+        *head = nextItem(*head); // Set head to next item
     }
     else
     {
@@ -581,7 +581,7 @@ void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
 }
 
 // Function to simulate the comeback process for items and vehicles
-void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
+void simulateComeback(ptrItem *items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
 {
     ptrVehicle tempVehicle = *dequeuedVehicles;
 
@@ -589,10 +589,10 @@ void simulateComeback(ptrItem items, ptrVehicle *dequeuedVehicles, ptrQueue moto
     deliveredOrReturned(*dequeuedVehicles);
 
     // Update the status of items based on assigned items in vehicles
-    updateStatusItem(*dequeuedVehicles, items);
+    updateStatusItem(*dequeuedVehicles, *items);
 
     // Remove delivered items from the main list of items
-    removeDeliveredItem(&items);
+    removeDeliveredItem(items);
 
     // Enqueue vehicles that have no assigned items back to their respective queues
     vehicleComeback(dequeuedVehicles, moto, van);
