@@ -324,30 +324,6 @@ int lengthOfVehicleList(ptrVehicle head)
     return length;
 }
 
-// Function to clone a linked list of items
-ptrVehicle cloneVehicleList(ptrVehicle head)
-{
-    if (head == NULL)
-    {
-        return NULL;
-    }
-
-    ptrVehicle newHead = createVehicle(infoVehicle(head));
-    ptrVehicle current = nextVehicle(head);
-    ptrVehicle newCurrent = newHead;
-
-    // Traverse the original list
-    while (current != NULL)
-    {
-        assignAddressVehicle(newCurrent, createVehicle(infoVehicle(current)));
-
-        // Move to the next node in both the original and cloned lists
-        newCurrent = nextVehicle(newCurrent);
-        current = nextVehicle(current);
-    }
-    return newHead; // Return the head of the cloned list
-}
-
 //------------------------------------------------------Queue Part------------------------------------------
 
 // Function to allocate memory for a queue

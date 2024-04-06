@@ -140,7 +140,6 @@ void accessByIdentifierItem(ptrItem head, int identifier, ptrItem *current, ptrI
     }
     if (*current == NULL) // If identifier is not found
     {
-        printf("Identifier %d not found\n", identifier); // Print error message
         return;
     }
 }
@@ -198,7 +197,7 @@ void displayVehicleL(ptrVehicle head)
 {
     if (head == NULL)
     {
-        printf("\nNo vehicle available.\n");
+        printf("No vehicle available.\n");
         return;
     }
 
@@ -304,6 +303,42 @@ ptrQueue createVansQ(dataVehicle info[], int size)
     return vansQ; // Return van queue
 }
 
+// Function to synchronize adding a vehicle to the appropriate queue based on its type
+void synchronizeAddQueue(ptrVehicle vehicle, ptrQueue moto, ptrQueue van)
+{
+    // Check if the vehicle pointer is not NULL
+    if (vehicle != NULL)
+    {
+        // Check if the vehicle type is "Moto"
+        if (infoType(vehicle) == "Moto")
+        {
+            // If the vehicle is a motorcycle, enqueue it in the motorcycle queue
+            enqueue(moto, vehicle);
+        }
+        else
+        {
+            // If the vehicle is not a motorcycle (i.e., it's a van), enqueue it in the van queue
+            enqueue(van, vehicle);
+        }
+    }
+}
+
+// Function to synchronize deleting a vehicle from the appropriate queue based on its type and identifier
+void synchronizeDeleteQueue(ptrVehicle vehicle, int identifier, ptrQueue moto, ptrQueue van)
+{
+    // Check if the vehicle type is "Moto"
+    if (infoType(vehicle) == "Moto")
+    {
+        // If the vehicle is a motorcycle, delete it from the motorcycle queue
+        deleteVehicle(&(moto->head), identifier);
+    }
+    else
+    {
+        // If the vehicle is not a motorcycle (i.e., it's a van), delete it from the van queue
+        deleteVehicle(&(van->head), identifier);
+    }
+}
+
 //------------------------------------------------------Delivery Part------------------------------------------
 
 // Function to convert date format for sorting
@@ -312,7 +347,7 @@ int convertDate(ptrItem item)
     char date[11];     // Array to store date
     int converted = 0; // Initialize converted to 0
 
-    strcpy(date, item->dataI.entryDate); // Copy entry date to date array
+    strcpy(date, infoEntryDate(item)); // Copy entry date to date array
 
     for (int i = 0; i < strlen(date); i++) // Loop through characters in date
     {
@@ -702,52 +737,6 @@ void updateItemsFile(ptrItem head, char *filename)
     fclose(file);
 }
 
-// Sorts a linked list of items in reverse order based on their dates.
-void reversedSort(ptrItem head)
-{
-    bool swapped = false; // Initialize swapped to false
-    ptrItem temp;         // Temporary pointer
-
-    do
-    {
-        swapped = false;                               // Reset swapped to false
-        temp = head;                                   // Set temp to head
-        while (temp != NULL && nextItem(temp) != NULL) // Loop through items
-        {
-            if (convertDate(temp) < convertDate(nextItem(temp))) // Compare dates
-            {
-                ptrItem next = nextItem(temp); // Get next item
-                swap(temp, next);              // Swap items
-                swapped = true;                // Set swapped to true
-            }
-            temp = nextItem(temp); // Move to next item
-        }
-    } while (swapped); // Continue until no swaps are made
-}
-
-// Calculates the number of new items in the list.
-int numberOfNewItem(ptrItem itemList)
-{
-    int count = 0;
-    if (itemList == NULL)
-    {
-        return -1; // Error condition: list is empty or invalid
-    }
-    else
-    {
-        reversedSort(itemList);        // Sort the list in reverse order
-        int s = convertDate(itemList); // Calculate converted date value
-
-        ptrItem temp = itemList;
-        while (temp != NULL && convertDate(temp) == s)
-        {
-            count++;               // Increment count for each item with the same date
-            temp = nextItem(temp); // Move to next item
-        }
-    }
-    return count; // Return total count of new items
-}
-
 // Calculates the number of delivered items.
 int numberOfDeliveredItem(ptrItem itemList, char *fileName)
 {
@@ -777,4 +766,26 @@ int numberOfReturnedItem(ptrItem itemList)
         }
     }
     return count; // Return total count of returned items
+}
+
+// Function to count the number of retired vehicles in a linked list of vehicles
+int numberOfRetiredVehicle(ptrVehicle vehicleList)
+{
+    // Initialize a counter to keep track of the number of retired vehicles
+    int count = 0;
+
+    // Loop through the linked list until the end is reached (NULL)
+    while (vehicleList != NULL)
+    {
+        // Check if the current vehicle in the list has completed 3 trips (retired)
+        if (infoTrips(vehicleList) == 3)
+        {
+            // If the vehicle has completed 3 trips, increment the counter
+            count++;
+        }
+        // Move to the next vehicle in the linked list
+        vehicleList = nextVehicle(vehicleList);
+    }
+    // Return the total count of retired vehicles
+    return count;
 }

@@ -46,6 +46,12 @@ ptrQueue createMotoQ(dataVehicle info[], int size);
 // Function to create a queue of vans from an array of dataVehicle structures
 ptrQueue createVansQ(dataVehicle info[], int size);
 
+// Function to synchronize adding a vehicle to the appropriate queue based on its type
+void synchronizeAddQueue(ptrVehicle vehicle, ptrQueue moto, ptrQueue van);
+
+// Function to synchronize deleting a vehicle from the appropriate queue based on its type and identifier
+void synchronizeDeleteQueue(ptrVehicle vehicle, int identifier, ptrQueue moto, ptrQueue van);
+
 //------------------------------------------------------Delivery Part------------------------------------------
 
 // Function to convert the date format of an item for sorting
@@ -88,7 +94,28 @@ void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
 
 // Function to simulate the comeback process for items and vehicles
 void simulateComeback(ptrItem *items, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
+
+//------------------------------------------------------Return pick-up Part------------------------------------------
+
+// Function to remove items marked as "returned" from a linked list of items
+void removeReturnedItem(ptrItem *item);
+
+// Function to process returned vehicles and enqueue them into respective queues
+void vehicleReturn(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
+
+// Function to simulate pickup process by removing returned items and processing returned vehicles
+void simulatePickup(ptrItem *item, ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van);
+
 //------------------------------------------------------Report Part------------------------------------------
 
 // Function to update the items file with the latest information
 void updateItemsFile(ptrItem head, char *filename);
+
+// Calculates the number of delivered items.
+int numberOfDeliveredItem(ptrItem itemList, char *fileName);
+
+// Calculates the number of returned items in the list.
+int numberOfReturnedItem(ptrItem itemList);
+
+// Function to count the number of retired vehicles in a linked list of vehicles
+int numberOfRetiredVehicle(ptrVehicle vehicleList);
