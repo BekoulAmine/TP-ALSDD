@@ -4,7 +4,6 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
-#include <windows.h>
 
 typedef struct ItemL *ptrItem;
 typedef struct VehicleL *ptrVehicle;

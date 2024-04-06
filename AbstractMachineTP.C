@@ -146,6 +146,30 @@ int lengthOfItemList(ptrItem head)
     return length;
 }
 
+// Function to clone a linked list of items
+ptrItem cloneItemList(ptrItem head)
+{
+    if (head == NULL)
+    {
+        return NULL;
+    }
+
+    ptrItem newHead = createItem(infoItem(head)); // Create a new head node for the cloned list with the same data as the original head
+    ptrItem current = nextItem(head);             // Pointer to the current node in the original list
+    ptrItem newCurrent = newHead;                 // Pointer to the current node in the cloned list
+
+    // Traverse the original list
+    while (current != NULL)
+    {
+        assignAddressItem(newCurrent, createItem(infoItem(current))); // Create a new node in the cloned list with the same data as the current node in the original list
+
+        // Move to the next node in both the original and cloned lists
+        newCurrent = nextItem(newCurrent);
+        current = nextItem(current);
+    }
+    return newHead; // Return the head of the cloned list
+}
+
 //------------------------------------------------------Vehicle Part------------------------------------------
 
 // Function to allocate memory for a vehicle
@@ -281,6 +305,47 @@ ptrVehicle createVehicle(dataVehicle info)
     assignItemToVehicle(vehicle, NULL);
     assignAddressVehicle(vehicle, NULL);
     return vehicle;
+}
+
+// Function to calculate the length of the vehicle list
+int lengthOfVehicleList(ptrVehicle head)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+
+    int length = 0;
+    while (head != NULL)
+    {
+        length++;
+        head = nextVehicle(head);
+    }
+    return length;
+}
+
+// Function to clone a linked list of items
+ptrVehicle cloneVehicleList(ptrVehicle head)
+{
+    if (head == NULL)
+    {
+        return NULL;
+    }
+
+    ptrVehicle newHead = createVehicle(infoVehicle(head));
+    ptrVehicle current = nextVehicle(head);
+    ptrVehicle newCurrent = newHead;
+
+    // Traverse the original list
+    while (current != NULL)
+    {
+        assignAddressVehicle(newCurrent, createVehicle(infoVehicle(current)));
+
+        // Move to the next node in both the original and cloned lists
+        newCurrent = nextVehicle(newCurrent);
+        current = nextVehicle(current);
+    }
+    return newHead; // Return the head of the cloned list
 }
 
 //------------------------------------------------------Queue Part------------------------------------------

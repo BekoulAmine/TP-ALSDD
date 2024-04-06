@@ -94,6 +94,11 @@ ptrItem createItemL(dataItem info[], int numberOfItems)
 // Function to display items in the linked list
 void displayItemL(ptrItem head)
 {
+    if (head == NULL)
+    {
+        printf("\nNo item available.\n");
+        return;
+    }
     ptrItem current = head; // Initialize current to head
 
     printf("| ID | Entry Date  | Wilaya | Weight | Status            |\n");
@@ -191,6 +196,12 @@ ptrVehicle createVehicleL(dataVehicle info[], int numberOfVehicle)
 // Function to display vehicles in the linked list
 void displayVehicleL(ptrVehicle head)
 {
+    if (head == NULL)
+    {
+        printf("\nNo vehicle available.\n");
+        return;
+    }
+
     ptrVehicle current = head; // Initialize current to head
 
     printf("| Type  | ID | Capacity |\n");
@@ -493,9 +504,17 @@ void deliveredOrReturned(ptrVehicle head)
         while (item != NULL)
         {
             // Generate a random value (0 or 1)
-            int value = rand() % 2;
+            int value = rand() % 3;
             // Assign "delivered" status if the random value is 1, otherwise assign "returned" status
-            (value) ? assignStatus(item, "delivered") : assignStatus(item, "returned");
+            if (value == 1 || value == 2)
+            {
+                assignStatus(item, "delivered");
+            }
+            else
+            {
+                assignStatus(item, "returned");
+            }
+
             // Move to the next item
             item = nextItem(item);
         }
