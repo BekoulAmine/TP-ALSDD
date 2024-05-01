@@ -1,5 +1,6 @@
 #include <conio.h>
 #include <windows.h>
+#include <stdio.h>
 
 void clearScreen()
 {

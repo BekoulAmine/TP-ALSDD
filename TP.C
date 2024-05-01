@@ -24,6 +24,7 @@ int main()
     dataVehicle vehicleData[numVehicle];
 
     homePage();
+
     while (true)
     {
     GENERAL_MENU:
@@ -39,8 +40,7 @@ int main()
         printf("\n\t\t\t\t| 5. Simulate vehicle comeback               |");
         printf("\n\t\t\t\t| 6. Simulate returns pick-up                |");
         printf("\n\t\t\t\t| 7. End of day                              |");
-        printf("\n\t\t\t\t| 8. Pass to next day                        |");
-        printf("\n\t\t\t\t| 9. Exit                                    |");
+        printf("\n\t\t\t\t| 8. Exit                                    |");
         printf("\n\t\t\t\t|--------------------------------------------|");
 
         printf("\n\n\t\t\t\t\033[93mPlease enter your choice: \033[0m");
@@ -89,7 +89,14 @@ int main()
 
             dataItem newItem;
 
-            readItemInfo(&newItem);
+            printf("\t\t\t\t\033[93mEnter Weight of new Item : \033[0m");
+            scanf("%f", &newItem.weight);
+
+            printf("\t\t\t\t\033[93mEnter Wilaya of new Item : \033[0m");
+            scanf("%d", &newItem.wilaya);
+
+            strcpy(newItem.entryDate, "2024/04/14");
+            strcpy(newItem.status, "awaiting delivery");
             newItem.identifier = maxIdentifier + addedItem + 1;
 
             addItem(&itemList, newItem);
@@ -133,10 +140,21 @@ int main()
                     dataVehicle newVehicle;
                     ptrVehicle Vehicle;
 
-                    readVehicleInfo(&newVehicle);
-                    newVehicle.identifier = infoIdentifierVehicle(findTailVehicle(vehicleList)) + 1;
+                    do
+                    {
+                        printf("\t\t\t\t\033[93mEnter Vehicle type (Moto or Vans) : \033[0m");
+                        scanf("%s", newVehicle.type);
 
-                    printf("\n\n\t\t\t\tList of vehicles :\n\n");
+                    } while (strcmp(newVehicle.type, "Moto") != 0 && strcmp(newVehicle.type, "Vans") != 0);
+
+                    do
+                    {
+                        printf("\t\t\t\t\033[93mEnter Capacity of the %s (Moto's Capacity Does not Surpass 2 Items): \033[0m", newVehicle.type);
+                        scanf("%d", &newVehicle.capacity);
+
+                    } while (strcmp(newVehicle.type, "Moto") == 0 && newVehicle.capacity > 2);
+
+                    newVehicle.identifier = infoIdentifierVehicle(findTailVehicle(vehicleList)) + 1;
 
                     Vehicle = createVehicle(newVehicle);
                     addVehicle(&vehicleList, Vehicle);
@@ -144,6 +162,7 @@ int main()
 
                     addedVehicle++;
 
+                    printf("\n\t\t\t\t\t\tList of vehicles :\n\n");
                     displayVehicleL(vehicleList);
 
                     printf("\n\t\t\t\t\033[93mPress ESC to return to the menu...\033[0m");
@@ -162,10 +181,23 @@ int main()
                     printf("\t\t\t\tEnter the identifier of the vehicle you want to delete: ");
                     scanf("%d", &identifier);
 
+                    if (!searchIdentifier(vehicleList, identifier))
+                    {
+                        do
+                        {
+                            printf("\t\t\t\tidentifier %d not found\n", identifier);
+                            printf("\t\t\t\tEnter the identifier of the vehicle you want to delete: ");
+                            scanf("%d", &identifier);
+
+                        } while (!searchIdentifier(vehicleList, identifier));
+                    }
+
                     deleted = deleteVehicle(&vehicleList, identifier);
+
                     synchronizeDeleteQueue(deleted, identifier, moto, van);
                     deletedVehicle++;
 
+                    printf("\n\t\t\t\t\t\tList of vehicles :\n\n");
                     displayVehicleL(vehicleList);
 
                     printf("\n\t\t\t\t\033[93mPress ESC to return to the menu...\033[0m");
@@ -277,7 +309,7 @@ int main()
             printf("\t\t\t\titems Returned : %d\n", returnedItem);
             printf("\t\t\t\tvehicle Added :%d\n", addedVehicle);
             printf("\t\t\t\tvehicle Deleted :%d\n", deletedVehicle);
-            printf("\t\t\t\tvehicle Retired :%d\n", numberOfRetiredVehicle(vehicleList));
+            printf("\t\t\t\tvehicle Retired :%d\n", numberOfRetiredVehicle(vehicleList, moto, van));
 
             printf("\n\t\t\t\t\033[93mPress ESC to return to the menu...\033[0m");
             while (getch() != 27)
@@ -287,26 +319,15 @@ int main()
             break;
 
         case 8:
-            clearScreen();
-
-            resetTrips(vehicleList);
-
-            printf("\n\t\t\t\t\033[93mPress ESC to return to the menu...\033[0m");
-            while (getch() != 27)
-                ;
-            goto GENERAL_MENU;
-
-            break;
-
-        case 9:
 
             exit(false);
             break;
 
         default:
-            printf("\n\t\t\t\tInvalid option. Please choose a valid menu item.\n");
-            printf("\n");
 
+            clearScreen();
+
+            printf("\n\t\t\t\t\033[91mInvalid option. Please choose a valid menu item.\n");
             printf("\n\t\t\t\t\033[93mPress ESC to return to the menu...\033[0m");
             while (getch() != 27)
                 ;

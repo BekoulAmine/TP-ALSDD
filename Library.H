@@ -74,7 +74,6 @@ ptrItem findTailItem(ptrItem *head);
 ptrItem createItem(dataItem info);
 int lengthOfItemList(ptrItem head);
 ptrItem cloneItemList(ptrItem head);
-void readItemInfo(dataItem *info);
 
 //------------------------------------------------------Abstract Machine Vehicle Part------------------------------------------
 
@@ -96,7 +95,6 @@ ptrVehicle nextVehicle(ptrVehicle vehicle);
 ptrVehicle findTailVehicle(ptrVehicle head);
 ptrVehicle createVehicle(dataVehicle info);
 int lengthOfVehicleList(ptrVehicle head);
-void readVehicleInfo(dataVehicle *info);
 
 //------------------------------------------------------Abstract Machine Queue Part------------------------------------------
 
@@ -129,6 +127,7 @@ void deleteItem(ptrItem *head, int identifier);
 ptrVehicle createVehicleL(dataVehicle info[], int numberOfVehicle);
 void displayVehicleL(ptrVehicle head);
 void addVehicle(ptrVehicle *head, ptrVehicle newVehicle);
+bool searchIdentifier(ptrVehicle head, int identifier);
 void accessByIdentifier(ptrVehicle head, int identifier, ptrVehicle *current, ptrVehicle *previous);
 ptrVehicle deleteVehicle(ptrVehicle *head, int identifier);
 
@@ -169,11 +168,7 @@ void simulatePickup(ptrItem *item, ptrVehicle *dequeuedVehicles, ptrQueue moto, 
 void updateItemsFile(ptrItem head, char *filename);
 int numberOfDeliveredItem(ptrItem original, ptrItem updated);
 int numberOfReturnedItem(ptrItem itemList);
-int numberOfRetiredVehicle(ptrVehicle vehicleList);
-
-//------------------------------------------------------Next day Part------------------------------------------
-
-void resetTrips(ptrVehicle vehicle);
+int numberOfRetiredVehicle(ptrVehicle vehicleList, ptrQueue moto, ptrQueue van);
 
 //-----------------------------------------------------------FUNCTION PART--------------------------------------------
 //---------------------------------------------------------------------------------------------------------------
@@ -188,36 +183,64 @@ void allocateItem(ptrItem *item)
 // Function to assign identifier to an item
 void assignIdentifierItem(ptrItem item, int identifier)
 {
+    if (item == NULL)
+    {
+        return;
+    }
+
     item->dataI.identifier = identifier;
 }
 
 // Function to assign entry date to an item
 void assignDate(ptrItem item, const char *date)
 {
+    if (item == NULL)
+    {
+        return;
+    }
     strcpy(item->dataI.entryDate, date);
 }
 
 // Function to assign Wilaya (region) to an item
 void assignWilaya(ptrItem item, int wilaya)
 {
+    if (item == NULL)
+    {
+        return;
+    }
     item->dataI.wilaya = wilaya;
 }
 
 // Function to assign weight to an item
 void assignWeight(ptrItem item, float weight)
 {
+    if (item == NULL)
+    {
+        return;
+    }
+
     item->dataI.weight = weight;
 }
 
 // Function to assign status to an item
 void assignStatus(ptrItem item, const char *status)
 {
+    if (item == NULL)
+    {
+        return;
+    }
+
     strcpy(item->dataI.status, status);
 }
 
 // Function to assign all attributes of an item
 void assignItem(ptrItem item, dataItem source)
 {
+    if (item == NULL)
+    {
+        return;
+    }
+
     assignIdentifierItem(item, source.identifier);
     assignDate(item, source.entryDate);
     assignWilaya(item, source.wilaya);
@@ -228,6 +251,10 @@ void assignItem(ptrItem item, dataItem source)
 // Function to assign address of the next item
 void assignAddressItem(ptrItem first, ptrItem second)
 {
+    if (first == NULL)
+    {
+        return;
+    }
     first->next = second;
 }
 
@@ -288,7 +315,13 @@ ptrItem nextItem(ptrItem item)
 // Function to find the last item in the list
 ptrItem findTailItem(ptrItem *head)
 {
+    if (*head == NULL)
+    {
+        return NULL;
+    }
+
     ptrItem temp = *head;
+
     while (nextItem(temp) != NULL)
     {
         temp = nextItem(temp);
@@ -315,6 +348,7 @@ int lengthOfItemList(ptrItem head)
     }
 
     int length = 0;
+
     while (head != NULL)
     {
         length++;
@@ -347,22 +381,6 @@ ptrItem cloneItemList(ptrItem head)
     return newHead; // Return the head of the cloned list
 }
 
-// Function to read item data from the user
-void readItemInfo(dataItem *info)
-{
-    printf("Enter the weight of the Item: ");
-    scanf("%f", &(info->weight));
-
-    printf("Enter the wilaya: ");
-    scanf("%d", &(info->wilaya));
-
-    // Assuming the entry date is always set to "2024/04/14"
-    strcpy(info->entryDate, "2024/04/14");
-
-    // Assuming the status is always set to "awaiting delivery"
-    strcpy(info->status, "awaiting delivery");
-}
-
 //------------------------------------------------------Abstract Machine Vehicle Part------------------------------------------
 
 // Function to allocate memory for a vehicle
@@ -374,36 +392,61 @@ void allocateVehicle(ptrVehicle *vehicle)
 // Function to assign type to a vehicle
 void assignType(ptrVehicle vehicle, char type[])
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
     strcpy(vehicle->dataV.type, type);
 }
 
 // Function to assign identifier to a vehicle
 void assignIdentifierVehicle(ptrVehicle vehicle, int identifier)
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
     vehicle->dataV.identifier = identifier;
 }
 
 // Function to assign capacity to a vehicle
 void assignCapacity(ptrVehicle vehicle, int capacity)
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
     vehicle->dataV.capacity = capacity;
 }
 
 // Function to assign number of trips to a vehicle
 void assignTrips(ptrVehicle vehicle, int trips)
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
     vehicle->trips = trips;
 }
 
 // Functions to assign an item to a vehicle
 void assignItemToVehicle(ptrVehicle vehicle, ptrItem item)
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
     vehicle->item = item;
 }
 
 // Function to assign all attributes of a vehicle
 void assignVehicle(ptrVehicle vehicle, dataVehicle source)
 {
+    if (vehicle == NULL)
+    {
+        return;
+    }
+
     assignType(vehicle, source.type);
     assignIdentifierVehicle(vehicle, source.identifier);
     assignCapacity(vehicle, source.capacity);
@@ -412,6 +455,10 @@ void assignVehicle(ptrVehicle vehicle, dataVehicle source)
 // Function to assign address of the next vehicle
 void assignAddressVehicle(ptrVehicle first, ptrVehicle second)
 {
+    if (first == NULL)
+    {
+        return;
+    }
     first->next = second;
 }
 
@@ -447,14 +494,11 @@ int infoTrips(ptrVehicle vehicle)
 // Function to retrieve assigned item of a vehicle
 ptrItem getAssignedItem(ptrVehicle vehicle)
 {
-    if (vehicle != NULL)
-    {
-        return vehicle->item;
-    }
-    else
+    if (vehicle == NULL)
     {
         return NULL;
     }
+    return vehicle->item;
 }
 
 // Function to retrieve all information about a vehicle
@@ -466,6 +510,11 @@ dataVehicle infoVehicle(ptrVehicle vehicle)
 // Function to retrieve the next vehicle
 ptrVehicle nextVehicle(ptrVehicle vehicle)
 {
+    if (vehicle == NULL)
+    {
+        return NULL;
+    }
+
     return vehicle->next;
 }
 
@@ -476,15 +525,13 @@ ptrVehicle findTailVehicle(ptrVehicle head)
     {
         return NULL;
     }
-    else
+    ptrVehicle temp = head;
+    while (nextVehicle(temp) != NULL)
     {
-        ptrVehicle temp = head;
-        while (nextVehicle(temp) != NULL)
-        {
-            temp = nextVehicle(temp);
-        }
-        return temp;
+        temp = nextVehicle(temp);
     }
+
+    return temp;
 }
 
 // Function to create a new vehicle
@@ -515,28 +562,6 @@ int lengthOfVehicleList(ptrVehicle head)
         head = nextVehicle(head);
     }
     return length;
-}
-
-// Function to read vehicle information from the user
-void readVehicleInfo(dataVehicle *info)
-{
-    printf("Enter type of vehicle (Moto or Vans): ");
-    scanf("%s", info->type);
-
-    while (strcmp(info->type, "Moto") != 0 && strcmp(info->type, "Vans") != 0)
-    {
-        printf("Invalid vehicle type entered. Please re-enter: \n");
-        scanf("%s", info->type);
-    }
-
-    printf("Enter the capacity of the %s (in Moto case doesn't pass 2 items): ", info->type);
-    scanf("%d", &(info->capacity));
-
-    while (strcmp(info->type, "Moto") == 0 && info->capacity >= 3)
-    {
-        printf("Enter the capacity of the %s (in Moto case doesn't pass 2 items): ", info->type);
-        scanf("%d", &(info->capacity));
-    }
 }
 
 //------------------------------------------------------Abstract Machine Queue Part------------------------------------------
@@ -591,6 +616,10 @@ bool isEmpty(ptrQueue queue)
 // Function to add a vehicle to the queue
 void enqueue(ptrQueue queue, ptrVehicle newVehicle)
 {
+    if (infoTrips(newVehicle) == 3)
+    {
+        return;
+    }
 
     if (isEmpty(queue))
     {
@@ -855,6 +884,25 @@ void addVehicle(ptrVehicle *head, ptrVehicle newVehicle)
     }
 }
 
+// Function to search for a specific identifier in a linked list of vehicles
+bool searchIdentifier(ptrVehicle head, int identifier)
+{
+    // Traverse the linked list until the end is reached
+    while (head != NULL)
+    {
+        // Check if the identifier of the current node matches the given identifier
+        if (infoIdentifierVehicle(head) == identifier)
+        {
+            // Return true if a match is found
+            return true;
+        }
+        // Move to the next node in the linked list
+        head = nextVehicle(head);
+    }
+    // Return false if the identifier is not found in the linked list
+    return false;
+}
+
 // Function to access vehicle by identifier
 void accessByIdentifier(ptrVehicle head, int identifier, ptrVehicle *current, ptrVehicle *previous)
 {
@@ -868,7 +916,7 @@ void accessByIdentifier(ptrVehicle head, int identifier, ptrVehicle *current, pt
     }
     if (*current == NULL) // If identifier is not found
     {
-        printf("Identifier %d not found\n", identifier); // Print error message
+        printf("\t\t\t\t\t\t\033[91mNo Identifier %d not found\033[0m\n", identifier); // Print error message
         return;
     }
 }
@@ -953,16 +1001,19 @@ void synchronizeAddQueue(ptrVehicle vehicle, ptrQueue moto, ptrQueue van)
 // Function to synchronize deleting a vehicle from the appropriate queue based on its type and identifier
 void synchronizeDeleteQueue(ptrVehicle vehicle, int identifier, ptrQueue moto, ptrQueue van)
 {
+    ptrVehicle deleted;
     // Check if the vehicle type is "Moto"
     if (infoType(vehicle) == "Moto")
     {
+        deleted = getHead(moto); // Set the deleted variable as the
         // If the vehicle is a motorcycle, delete it from the motorcycle queue
-        deleteVehicle(&(moto->head), identifier);
+        deleteVehicle(&deleted, identifier);
     }
     else
     {
+        deleted = getHead(van); // Set the deleted variable as the
         // If the vehicle is not a motorcycle (i.e., it's a van), delete it from the van queue
-        deleteVehicle(&(van->head), identifier);
+        deleteVehicle(&deleted, identifier);
     }
 }
 
@@ -1032,7 +1083,7 @@ void addItemToVehicle(ptrItem item, ptrVehicle vehicle)
 // Function to assign items to motorcycles
 void linkItemMoto(ptrItem item, ptrQueue motoQueue)
 {
-    if (item == NULL || motoQueue == NULL)
+    if (item == NULL || isEmpty(motoQueue))
     {
         return;
     }
@@ -1067,6 +1118,11 @@ void linkItemMoto(ptrItem item, ptrQueue motoQueue)
 // Function to assign items to vans
 void linkItemVan(ptrItem item, ptrQueue van)
 {
+    if (item == NULL || isEmpty(van))
+    {
+        return;
+    }
+
     sortByDate(item);
 
     ptrVehicle currentVan = getHead(van);
@@ -1188,6 +1244,11 @@ void deliveredOrReturned(ptrVehicle head)
 // Function to remove delivered items from the list
 void removeDeliveredItem(ptrItem *head)
 {
+    if (*head == NULL)
+    {
+        return;
+    }
+
     ptrItem current = *head;
 
     while (current != NULL)
@@ -1247,8 +1308,9 @@ void vehicleComeback(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
             // Delete the vehicle from the dequeued list
             ptrVehicle deletedVehicle = deleteVehicle(dequeuedVehicles, infoIdentifierVehicle(tempVehicle));
             tempVehicle = *dequeuedVehicles;
-            // Enqueue the deleted vehicle back to its respective queue based on its type
-            if (strcmp(infoType(deletedVehicle), "Moto") == 0)
+
+            if (strcmp(infoType(deletedVehicle), "Moto") == 0) // Enqueue the deleted vehicle back to its respective queue based on its type
+
             {
                 enqueue(moto, deletedVehicle);
             }
@@ -1268,7 +1330,6 @@ void simulateComeback(ptrItem *items, ptrVehicle *dequeuedVehicles, ptrQueue mot
 
     // Randomly assign statuses to items
     deliveredOrReturned(*dequeuedVehicles);
-
     // Update the status of items based on assigned items in vehicles
     updateStatusItem(*dequeuedVehicles, *items);
 
@@ -1308,8 +1369,7 @@ void vehicleReturn(ptrVehicle *dequeuedVehicles, ptrQueue moto, ptrQueue van)
 {
     ptrVehicle tempVehicle = *dequeuedVehicles; // Initialize tempVehicle pointer to the beginning of the dequeued vehicles list
 
-    // Traverse the list of dequeued vehicles
-    while (tempVehicle != NULL)
+    while (tempVehicle != NULL) // Traverse the list of dequeued vehicles
     {
         // Remove returned items associated with the current vehicle
         removeReturnedItem(&(tempVehicle->item));
@@ -1374,64 +1434,27 @@ int numberOfDeliveredItem(ptrItem original, ptrItem updated)
 // Calculates the number of returned items in the list.
 int numberOfReturnedItem(ptrItem itemList)
 {
-    int count = 0;
-
     if (itemList == NULL)
     {
-        return -1; // Error condition: list is empty or invalid
+        return 0; // Error condition: list is empty or invalid
     }
-    else
+
+    int count = 0;
+    ptrItem temp = itemList;
+
+    while (temp != NULL)
     {
-        ptrItem temp = itemList;
-        while (temp != NULL)
+        if (!strcmp(infoStatus(temp), "returned"))
         {
-            if (!strcmp(infoStatus(temp), "returned"))
-            {
-                count++; // Increment count for each returned item
-            }
-            temp = nextItem(temp); // Move to next item
+            count++; // Increment count for each returned item
         }
+        temp = nextItem(temp); // Move to next item
     }
     return count; // Return total count of returned items
 }
 
 // Function to count the number of retired vehicles in a linked list of vehicles
-int numberOfRetiredVehicle(ptrVehicle vehicleList)
+int numberOfRetiredVehicle(ptrVehicle vehicleList, ptrQueue moto, ptrQueue van)
 {
-    // Initialize a counter to keep track of the number of retired vehicles
-    int count = 0;
-
-    // Loop through the linked list until the end is reached (NULL)
-    while (vehicleList != NULL)
-    {
-        // Check if the current vehicle in the list has completed 3 trips (retired)
-        if (infoTrips(vehicleList) == 3)
-        {
-            // If the vehicle has completed 3 trips, increment the counter
-            count++;
-        }
-        // Move to the next vehicle in the linked list
-        vehicleList = nextVehicle(vehicleList);
-    }
-    // Return the total count of retired vehicles
-    return count;
-}
-
-//------------------------------------------------------Next day Part------------------------------------------
-
-// Function to reset the number of trips for all vehicles in a linked list
-void resetTrips(ptrVehicle vehicle)
-{
-    // If the vehicle list is empty, there's nothing to reset, so return
-    if (vehicle == NULL)
-    {
-        return;
-    }
-
-    // Traverse the vehicle list
-    while (vehicle != NULL)
-    {
-        assignTrips(vehicle, 0);        // Reset the number of trips on this vehicle
-        vehicle = nextVehicle(vehicle); // Move to the next vehicle in the list
-    }
+    return lengthOfVehicleList(vehicleList) - lengthOfVehicleList(getHead(moto)) - lengthOfVehicleList(getHead(van));
 }
